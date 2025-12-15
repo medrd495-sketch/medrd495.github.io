@@ -1,0 +1,190 @@
+/* Horizontal Navigation Bar: */
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #5d5b5b;
+}
+
+ul li {
+    float: left;
+}
+
+ul li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+ul li a:hover {
+    background-color: #111111;
+}
+
+/* Dropdown Menu for Projects */
+li a:hover,
+.dropdown:hover {
+    background-color: red;
+}
+
+li.dropdown {
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Snapping effect in Music Section */
+@layer base, rhythm, layout, components, default, overwrites;
+
+html {
+    /* Create a snapping rule on the html element */
+    scroll-snap-type: y mandatory;
+
+    /* Create a timeline scope, so we can target any element on the page */
+    timeline-scope: --section, --main, --site-header;
+}
+
+/* We'll want to match these colors for the best melty effect */
+/* But play around with them (and add a color to section) to see happens */
+body,
+.content {
+    background-color: var(--color-background, rgb(255, 255, 255));
+
+}
+
+main {
+    view-timeline: --main;
+}
+
+.section {
+    /* Creating a snapping rule on the section element */
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+
+    /* Attach the timeline to the section element*/
+    view-timeline: --section;
+
+    /* Set each section to the full dynamic height of the viewport */
+    height: 100dvh;
+}
+
+.content {
+    /* Fix the content, so it doesn't scroll with the section */
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+
+    /* Animate the content based on the section scrolling */
+    --contrast: 4;
+    --blur: 0.5rem;
+
+    animation: blink ease-in-out both;
+    animation-timeline: --section;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        filter: blur(var(--blur)) contrast(var(--contrast));
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    50% {
+        filter: blur(0) contrast(1);
+        opacity: 1;
+        visibility: visible;
+    }
+}
+/*This section is for hte indicator, but I haven't gotten it to work yet on the music page*/
+
+/* 
+  This is a bit of a hack to get the indicator to work because I'm lazy.
+  We're translating the dot from the top to the bottom of its parent,
+  using the browser scroll position as the animation timeline.
+  It's not really matched up to the scrolling sections, only appears to be.
+*/
+.indicator::before {
+    animation: indicate linear both;
+    animation-timeline: --main;
+    animation-range: contain;
+}
+
+@keyframes indicate {
+    0% {
+        --color-indicator: var(--color-black);
+        transform: translateY(0);
+    }
+
+    25% {
+        --color-indicator: var(--color-black);
+    }
+
+    50% {
+        --color-indicator: var(--color-black);
+    }
+
+    75% {
+        --color-indicator: var(--color-black);
+    }
+
+    100% {
+        --color-indicator: var(--color-black);
+        transform: translateY(calc(var(--indicator-total-height) - var(--indicator-size)));
+    }
+}
+
+/* Remove gradient indicator on scroll-to-end (visible on small screens */
+
+.site-header label:last-of-type {
+    view-timeline: --site-header inline;
+}
+
+.site-header::after {
+    animation: fade-scroll ease-in-out both;
+    animation-timeline: --site-header;
+    animation-range: entry-crossing;
+}
+
+@keyframes fade-scroll {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* 
+I adapted this code and styling from:
+  https://codepen.io/giana/pen/rNRzgRj
+  Most of the comments are Giana's, as is the code. I've only made slight modifications here and there.
+*/
